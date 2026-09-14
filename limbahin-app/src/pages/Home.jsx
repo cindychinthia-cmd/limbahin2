@@ -182,6 +182,7 @@ export default function Home() {
         return;
       }
 
+      setSetupRequired(false);
       await loadPricing(effectiveConfig);
       setRate(effectiveRate);
       setConfigName(effectiveConfig);
@@ -285,6 +286,7 @@ export default function Home() {
         config: configName,
         state,
         quote,
+        registration,
         filename: quotePdfFilename(quote),
         pdfBase64: getQuotePdfBase64(quote, state.company),
       });
