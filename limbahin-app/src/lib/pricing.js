@@ -165,7 +165,8 @@ export function buildPricelistSummaryText(quote) {
     quote.items.forEach((it, i) => {
       const unit = (it.unit || '').replace(/^per\s+/i, '');
       const qtyPart = it.qty != null ? ` x ${Number(it.qty).toLocaleString('id-ID')}` : '';
-      lines.push(`${i + 1}. ${it.item} — ${formatIDR(it.harga)}/${unit}${qtyPart} = ${formatIDR(it.amount)}`);\n      if (it.definisi) lines.push(`   Deskripsi: ${it.definisi}`);
+      lines.push(`${i + 1}. ${it.item} — ${formatIDR(it.harga)}/${unit}${qtyPart} = ${formatIDR(it.amount)}`);
+      if (it.definisi) lines.push(`   Deskripsi: ${it.definisi}`);
     });
   }
 
