@@ -74,7 +74,7 @@ function handleQuotation_(payload) {
   validateCustformPayload_(payload);
   if (!payload.pdfBase64) throw new Error('PDF penawaran tidak diterima.');
   const id = payload.id || Utilities.getUuid();
-  const existing = payload.id ? loadCustform_(payload.id) : null;
+  const existing = payload.id ? findCustform_(payload.id) : null;
   const row = buildCustformRow_(payload, id, 'quotation_sent', existing);
   saveCustform_(row);
 
@@ -86,7 +86,7 @@ function handleQuotation_(payload) {
 function handleRegistration_(payload) {
   validateCustformPayload_(payload);
   const id = payload.id || Utilities.getUuid();
-  const existing = payload.id ? loadCustform_(payload.id) : null;
+  const existing = payload.id ? findCustform_(payload.id) : null;
   const row = buildCustformRow_(payload, id, 'registration_sent', existing);
   saveCustform_(row);
 
@@ -177,11 +177,17 @@ function saveCustform_(row) {
 
 function loadCustform_(id) {
   if (!id) throw new Error('Custform id wajib diisi.');
+  const found = findCustform_(id);
+  if (!found) throw new Error('Custform tidak ditemukan.');
+  return found;
+}
+
+function findCustform_(id) {
   const rows = supabaseRequest_(
     '/rest/v1/custforms?id=eq.' + encodeURIComponent(id) + '&select=*&limit=1',
     'get'
   );
-  if (!rows || !rows.length) throw new Error('Custform tidak ditemukan.');
+  if (!rows || !rows.length) return null;
   const row = rows[0];
   return {
     id: row.id,
