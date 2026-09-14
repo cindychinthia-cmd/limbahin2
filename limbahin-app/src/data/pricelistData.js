@@ -176,21 +176,6 @@ export const NOTES = {
     '*Biaya kelebihan limbah dikenakan sesuai tarif diluar kuota (lihat rincian)\n*Biaya kunjungan tambahan diluar kuota dikenakan per ritase sesuai tarif transport\n*Lampu TL diluar paket: IDR 120,000 per kg',
 };
 
-// DEPRECATED — ?param= no longer uses a fixed code lookup. It's now parsed directly from the URL
-// as a signed percentage (e.g. ?param=15xyz = +15%, ?param=-26abc = -26%) — see lib/paramRule.js.
-// Kept only so old bookmarked/shared links with these exact codes don't silently 404 elsewhere.
-export const PARAM_MULTIPLIERS = {
-  NULL: 1.0,
-  FIVE: 1.05,
-  TEN: 1.1,
-  FIFT: 1.15,
-  TWEN: 1.2,
-  MFIVE: 0.95,
-  MTEN: 0.9,
-  MFIFT: 0.85,
-  MTWEN: 0.8,
-};
-
 // Kode referal Step 1. 'MCC' → tampilkan semua opsi (lewati Step 4). Any other code is now looked
 // up live against the Supabase `referal_model` table — see lib/remoteConfig.js fetchReferralByCode()
 // and lib/referralQuote.js.
