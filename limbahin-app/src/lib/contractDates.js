@@ -1,4 +1,4 @@
-// Small helpers for the "Tanggal Mulai Kontrak" + "Durasi Kontrak" fields on /registrasi.
+// Small helpers for the "Tanggal Mulai Kontrak" + "Durasi Kontrak" fields in the unified registration step.
 // The sheet/contract convention is dd/mm/yyyy (e.g. "24/02/2026"), which is what these produce —
 // separate from the browser's native <input type="date"> value, which is always yyyy-mm-dd.
 
