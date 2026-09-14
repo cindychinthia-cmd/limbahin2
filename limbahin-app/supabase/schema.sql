@@ -9,17 +9,28 @@ alter table if exists referal_model
   add column if not exists items jsonb not null default '[]'::jsonb;
 
 -- Preserve legacy referral rows by converting their single item before dropping old columns.
-update referal_model
-set items = jsonb_build_array(jsonb_build_object(
-  'item', coalesce(item_title, 'Item'),
-  'description', coalesce(item_description, ''),
-  'harga', harga,
-  'unit', coalesce(unit, ''),
-  'qty', qty,
-  'jumlah', jumlah
-))
-where (items is null or jsonb_array_length(items) = 0)
-  and item_title is not null;
+-- Dynamic SQL keeps this migration safe to re-run after those columns have already been removed.
+do $
+begin
+  if exists (
+    select 1 from information_schema.columns
+    where table_schema = 'public' and table_name = 'referal_model' and column_name = 'item_title'
+  ) then
+    execute $migration$
+      update referal_model
+      set items = jsonb_build_array(jsonb_build_object(
+        'item', coalesce(item_title, 'Item'),
+        'description', coalesce(item_description, ''),
+        'harga', harga,
+        'unit', coalesce(unit, ''),
+        'qty', qty,
+        'jumlah', jumlah
+      ))
+      where (items is null or jsonb_array_length(items) = 0)
+        and item_title is not null
+    $migration$;
+  end if;
+end $;
 
 alter table if exists referal_model
   drop column if exists item_title,
