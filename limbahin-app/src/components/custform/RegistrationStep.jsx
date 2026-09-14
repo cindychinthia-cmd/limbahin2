@@ -93,6 +93,8 @@ export default function RegistrationStep({
     pjNama: company.contact,
     picLain: registration.catatanTambahanPic,
     rincianPelayanan: rincian,
+    tanggalMulaiKontrakIso: registration.tanggalMulaiKontrak,
+    tanggalAkhirKontrakIso: endDateIso,
     tanggalMulaiKontrak: formatDateDMY(registration.tanggalMulaiKontrak),
     tanggalAkhirKontrak: formatDateDMY(endDateIso),
   });
