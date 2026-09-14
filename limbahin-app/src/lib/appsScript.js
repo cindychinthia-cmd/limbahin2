@@ -27,13 +27,14 @@ export function loadCustform(id) {
   return callAppsScript('load', { id });
 }
 
-export function submitQuotation({ id, rate, config, state, quote, filename, pdfBase64 }) {
+export function submitQuotation({ id, rate, config, state, quote, registration, filename, pdfBase64 }) {
   return callAppsScript('quotation', {
     id,
     rate,
     config,
     state,
     quote,
+    registration,
     filename,
     pdfBase64,
   });
