@@ -158,15 +158,3 @@ export async function insertReferralModel(row) {
   if (error) return { status: 'error', message: error.message };
   return { status: 'ok', data };
 }
-
-// NOTE: no longer called anywhere in the app. /registrasi submissions now go through the Apps
-// Script web app (src/lib/appsScript.js -> submitRegistration), which writes to Supabase itself
-// server-side using the service-role key (see google-apps-script/Code.gs `handleRegistration_`
-// and the updated RLS policy in supabase/schema.sql). Left here only in case you want a
-// browser-side fallback path later.
-export async function insertRegistration(row) {
-  if (!supabase) return { status: 'not-configured' };
-  const { data, error } = await supabase.from('registrations').insert([row]).select().maybeSingle();
-  if (error) return { status: 'error', message: error.message };
-  return { status: 'ok', data };
-}
