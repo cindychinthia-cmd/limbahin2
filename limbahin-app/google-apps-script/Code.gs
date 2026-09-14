@@ -133,6 +133,8 @@ function buildCustformRow_(payload, id, status, existing) {
   const registration = sourceRegistration ? JSON.parse(JSON.stringify(sourceRegistration)) : null;
   if (registration) {
     registration.telpPerusahaan = phoneForStorage_(registration.telpPerusahaan || company.phone);
+    if (registration.tanggalMulaiKontrakIso) registration.tanggalMulaiKontrak = registration.tanggalMulaiKontrakIso;
+    if (registration.tanggalAkhirKontrakIso) registration.tanggalAkhirKontrak = registration.tanggalAkhirKontrakIso;
     registration.picOperasionalTel = phoneForStorage_(registration.picOperasionalTel);
     registration.picKeuanganTel = phoneForStorage_(registration.picKeuanganTel);
   }
