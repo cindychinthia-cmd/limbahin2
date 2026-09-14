@@ -120,10 +120,23 @@ function validateCustformPayload_(payload) {
 }
 
 function buildCustformRow_(payload, id, status, existing) {
-  const state = payload.state || {};
+  const state = JSON.parse(JSON.stringify(payload.state || {}));
   const company = state.company || {};
-  const quote = payload.quote || {};
-  const registration = payload.registration || (existing && existing.registration) || null;
+  company.phone = phoneForStorage_(company.phone);
+  state.company = company;
+
+  const quote = JSON.parse(JSON.stringify(payload.quote || {}));
+  const referralId = quote._referralRow && quote._referralRow.id ? quote._referralRow.id : '';
+  delete quote._referralRow;
+
+  const sourceRegistration = payload.registration || (existing && existing.registration) || null;
+  const registration = sourceRegistration ? JSON.parse(JSON.stringify(sourceRegistration)) : null;
+  if (registration) {
+    registration.telpPerusahaan = phoneForStorage_(registration.telpPerusahaan || company.phone);
+    registration.picOperasionalTel = phoneForStorage_(registration.picOperasionalTel);
+    registration.picKeuanganTel = phoneForStorage_(registration.picKeuanganTel);
+  }
+
   return {
     id: id,
     created_at: existing && existing.created_at ? existing.created_at : new Date().toISOString(),
@@ -134,11 +147,11 @@ function buildCustformRow_(payload, id, status, existing) {
     email: company.email || '',
     company_name: company.name || '',
     pic_name: company.contact || '',
-    phone: phoneForStorage_(company.phone),
+    phone: company.phone,
     location: state.location || '',
     waste: state.waste || '',
     service: quote.service || state.service || '',
-    referral_id: quote._referralRow && quote._referralRow.id ? quote._referralRow.id : '',
+    referral_id: referralId,
     rincian_pelayanan: registration && registration.rincianPelayanan
       ? registration.rincianPelayanan
       : buildItemizedSummaryText_(quote),
