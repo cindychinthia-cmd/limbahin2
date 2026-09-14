@@ -329,7 +329,11 @@ export default function Home() {
         registration: payload,
       });
       persistUrl(result.id, 3);
-      setRegistration(payload);
+      setRegistration({
+        ...payload,
+        tanggalMulaiKontrak: payload.tanggalMulaiKontrakIso,
+        tanggalAkhirKontrak: payload.tanggalAkhirKontrakIso,
+      });
       window.open(buildWhatsAppLink(buildRegistrationWhatsAppMessage({
         company: state.company,
         quote,
