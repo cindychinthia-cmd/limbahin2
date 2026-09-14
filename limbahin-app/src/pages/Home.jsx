@@ -280,8 +280,10 @@ export default function Home() {
     setBusy(true);
     setSubmitError('');
     try {
+      const activeId = custformId || window.crypto.randomUUID();
+      setCustformId(activeId);
       const result = await submitQuotation({
-        id: custformId || null,
+        id: activeId,
         rate,
         config: configName,
         state,
@@ -320,8 +322,10 @@ export default function Home() {
     setBusy(true);
     setSubmitError('');
     try {
+      const activeId = custformId || window.crypto.randomUUID();
+      setCustformId(activeId);
       const result = await submitRegistration({
-        id: custformId || null,
+        id: activeId,
         rate,
         config: configName,
         state,
