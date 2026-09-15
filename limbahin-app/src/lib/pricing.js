@@ -147,7 +147,7 @@ const DEF = {
 // selected item with its price, unit, quantity and subtotal, plus the pelayanan/limbah notes,
 // condensed to a few short lines. This is what's actually reused in:
 //   - the WhatsApp message sent to CS (lib/waMessages.js)
-//   - the "Rincian Pelayanan & Harga" section shown/submitted on /registrasi
+//   - the "Rincian Pelayanan & Harga" section shown/submitted in the unified registration step
 //   - the {rinc} placeholder of the generated contract (Apps Script)
 // It replaces the earlier plain `quote.summary` label/value list, which only described the
 // *choices* made (location, waste type, range...) and never actually showed price/qty/unit —
@@ -166,6 +166,7 @@ export function buildPricelistSummaryText(quote) {
       const unit = (it.unit || '').replace(/^per\s+/i, '');
       const qtyPart = it.qty != null ? ` x ${Number(it.qty).toLocaleString('id-ID')}` : '';
       lines.push(`${i + 1}. ${it.item} — ${formatIDR(it.harga)}/${unit}${qtyPart} = ${formatIDR(it.amount)}`);
+      if (it.definisi) lines.push(`   Deskripsi: ${it.definisi}`);
     });
   }
 

@@ -1,40 +1,51 @@
 import { formatIDR } from '@/lib/pricing';
 
-// Turns a single `referal_model` Supabase row into the same `quote` shape that computeQuote()
-// produces, so QuoteDocument.jsx and lib/pdf.js can render it with zero changes.
-//
-// `multiplier` is the ?param= price modifier (see lib/paramRule.js) — applied the same way it is
-// for the normal pricing engine, so a referral quote link still respects ?param=.
+// Converts one referal_model row into the regular quote shape. New rows store multiple line items
+// in items jsonb; legacy single-item columns are still read during the migration window.
 export function buildReferralQuote(row, multiplier = 1) {
   if (!row) return null;
 
-  const harga = Math.round(Number(row.harga || 0) * multiplier);
-  const qty = row.qty != null ? Number(row.qty) : null;
-  const jumlahRaw = row.jumlah != null ? Number(row.jumlah) : qty != null ? Number(row.harga || 0) * qty : harga;
-  const amount = Math.round(jumlahRaw * multiplier);
+  const sourceItems = Array.isArray(row.items) && row.items.length
+    ? row.items
+    : [{
+        item: row.item_title,
+        description: row.item_description,
+        harga: row.harga,
+        unit: row.unit,
+        qty: row.qty,
+        jumlah: row.jumlah,
+      }];
 
-  const item = {
-    item: row.item_title || 'Item',
-    definisi: row.item_description || '',
-    harga,
-    unit: row.unit || '-',
-    qty,
-    amount,
-  };
+  const items = sourceItems.map((source, index) => {
+    const rawPrice = Number(source.harga || 0);
+    const qty = source.qty == null || source.qty === '' ? null : Number(source.qty);
+    const rawAmount = source.jumlah == null || source.jumlah === ''
+      ? (qty == null ? rawPrice : rawPrice * qty)
+      : Number(source.jumlah);
+    return {
+      item: source.item || source.title || `Item ${index + 1}`,
+      definisi: source.description || source.definisi || '',
+      harga: Math.round(rawPrice * multiplier),
+      unit: source.unit || '-',
+      qty,
+      amount: Math.round(rawAmount * multiplier),
+    };
+  });
+  const total = items.reduce((sum, item) => sum + Number(item.amount || 0), 0);
 
   return {
     service: 'REFERAL',
     serviceLabel: 'Penawaran Kode Referal',
     code: `LIMBAHIN-REF-${(row.code || '').toUpperCase()}`,
     vehicle: null,
-    definisi: row.item_description || 'Penawaran khusus berdasarkan kode referal.',
+    definisi: row.description || 'Penawaran khusus berdasarkan kode referal.',
     summary: [
       { label: 'Kode Referal', value: (row.code || '').toUpperCase() },
       { label: 'Lokasi Pelayanan', value: row.lokasi_pelayanan || '-' },
       { label: 'Jenis Limbah', value: row.jenis_limbah || '-' },
     ],
-    items: [item],
-    total: amount,
+    items,
+    total,
     totalLabel: 'Total',
     notes: {
       pelayananTitle: 'Catatan Pelayanan',
@@ -42,8 +53,7 @@ export function buildReferralQuote(row, multiplier = 1) {
       limbah: row.catatan_limbah || '',
       global: '',
     },
-    // Kept for the WhatsApp / email summary text.
     _referralRow: row,
-    _totalDisplay: formatIDR(amount),
+    _totalDisplay: formatIDR(total),
   };
 }
